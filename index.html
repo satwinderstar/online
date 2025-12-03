@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultra HD Tic Tac Toe - vs Computer</title>
+
+<style>
+    body {
+        margin: 0;
+        background: linear-gradient(135deg, #000, #222);
+        font-family: Poppins, sans-serif;
+        color: white;
+        text-align: center;
+    }
+    h1 {
+        font-size: 40px;
+        color: #00eaff;
+        text-shadow: 0 0 20px #00eaff;
+        margin-top: 20px;
+    }
+    .board {
+        margin: 30px auto;
+        display: grid;
+        width: 330px;
+        height: 330px;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    .cell {
+        background: #111;
+        border-radius: 20px;
+        box-shadow: 0 0 20px inset #00eaff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 70px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .cell:hover {
+        box-shadow: 0 0 25px #00eaff;
+    }
+    #restart, #playAI {
+        font-size: 20px;
+        padding: 12px 25px;
+        margin-top: 20px;
+        border-radius: 12px;
+        background: #00eaff;
+        border: none;
+        cursor: pointer;
+        color: black;
+        font-weight: bold;
+    }
+    #status {
+        font-size: 22px;
+        margin-top: 10px;
+    }
+</style>
+
+</head>
+<body>
+
+<h1>🔥 Ultra HD Tic Tac Toe</h1>
+<div id="status">Player X ਦੀ ਵਾਰੀ</div>
+
+<div class="board" id="board">
+    <div class="cell" data-id="0"></div>
+    <div class="cell" data-id="1"></div>
+    <div class="cell" data-id="2"></div>
+    <div class="cell" data-id="3"></div>
+    <div class="cell" data-id="4"></div>
+    <div class="cell" data-id="5"></div>
+    <div class="cell" data-id="6"></div>
+    <div class="cell" data-id="7"></div>
+    <div class="cell" data-id="8"></div>
+</div>
+
+<button id="playAI">🤖 Play vs Computer</button>
+<button id="restart">↻ Restart</button>
+
+<script>
+let board = ["", "", "", "", "", "", "", "", ""];
+let currentPlayer = "X";
+let vsComputer = false;
+const statusText = document.getElementById("status");
+
+document.querySelectorAll(".cell").forEach(cell => {
+    cell.addEventListener("click", () => handleClick(cell));
+});
+
+document.getElementById("playAI").onclick = () => {
+    vsComputer = true;
+    resetGame();
+    statusText.innerHTML = "You (X) vs Computer (O)";
+};
+
+document.getElementById("restart").onclick = resetGame;
+
+function handleClick(cell) {
+    const id = cell.getAttribute("data-id");
+
+    if (board[id] !== "" || checkWinner()) return;
+
+    board[id] = currentPlayer;
+    cell.innerHTML = currentPlayer;
+
+    if (checkWinner()) {
+        statusText.innerHTML = currentPlayer + " ਜਿੱਤ ਗਿਆ!";
+        return;
+    }
+
+    if (vsComputer && currentPlayer === "X") {
+        currentPlayer = "O";
+        statusText.innerHTML = "Computer ਸੋਚ ਰਿਹਾ ਹੈ...";
+
+        setTimeout(computerMove, 500);
+    } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusText.innerHTML = currentPlayer + " ਦੀ ਵਾਰੀ";
+    }
+}
+
+function computerMove() {
+    let emptyCells = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+
+    let move = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+
+    board[move] = "O";
+    document.querySelector(`[data-id='${move}']`).innerHTML = "O";
+
+    if (checkWinner()) {
+        statusText.innerHTML = "Computer ਜਿੱਤ ਗਿਆ!";
+        return;
+    }
+
+    currentPlayer = "X";
+    statusText.innerHTML = "ਤੁਹਾਡੀ ਵਾਰੀ (X)";
+}
+
+function checkWinner() {
+    const wins = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+    ];
+
+    return wins.some(combo => {
+        if (board[combo[0]] &&
+            board[combo[0]] === board[combo[1]] &&
+            board[combo[1]] === board[combo[2]]) {
+            return true;
+        }
+        return false;
+    });
+}
+
+function resetGame() {
+    board = ["", "", "", "", "", "", "", "", ""];
+    currentPlayer = "X";
+
+    document.querySelectorAll(".cell").forEach(c => c.innerHTML = "");
+    statusText.innerHTML = vsComputer ? "You (X) vs Computer (O)" : "Player X ਦੀ ਵਾਰੀ";
+}
+</script>
+
+</body>
+</html>
